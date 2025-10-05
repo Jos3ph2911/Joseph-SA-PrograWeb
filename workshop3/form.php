@@ -31,7 +31,7 @@
     <label>Provincia:</label><br>
     <select name="provincia" required>
         <?php
-        $conexion = new mysqli("localhost", "root", "", "isw613_workshop2");
+        $conexion = new mysqli("localhost", "root", "trike123", "isw613_workshop2");
 
         if ($conexion->connect_error) {
             die("Error de conexión: " . $conexion->connect_error);
@@ -59,3 +59,4 @@
 
 </body>
 </html>
+
