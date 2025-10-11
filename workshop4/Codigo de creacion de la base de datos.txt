@@ -11,4 +11,5 @@ CREATE TABLE usuarios (
 );
 
 INSERT INTO usuarios (username, password, nombre, rol, estado)
-VALUES ('Joseph', MD5('Jos123'), 'Administrador del sistema', 'Administrador', 'Activo');
+VALUES ('Admin', MD5('admin123'), 'Administrador del sistema', 'Administrador', 'Activo');
+
