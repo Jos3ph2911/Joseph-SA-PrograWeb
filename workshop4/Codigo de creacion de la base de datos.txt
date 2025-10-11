@@ -1,0 +1,14 @@
+CREATE DATABASE IF NOT EXISTS workshop4;
+USE workshop4;
+
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    rol ENUM('Administrador', 'Usuario') DEFAULT 'Usuario',
+    estado ENUM('Activo', 'Inactivo') DEFAULT 'Activo'
+);
+
+INSERT INTO usuarios (username, password, nombre, rol, estado)
+VALUES ('Joseph', MD5('Jos123'), 'Administrador del sistema', 'Administrador', 'Activo');
