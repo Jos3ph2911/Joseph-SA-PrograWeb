@@ -11,7 +11,7 @@ if ($_SESSION['rol'] !== 'chofer') {
 
 $id_chofer = $_SESSION['id'];
 
-// Obtener los viajes del chofer
+// Obtener los viajes del chofer con su vehículo
 $sql = "SELECT v.id, v.titulo, v.lugar_salida, v.lugar_llegada, v.fecha_hora, 
                v.costo_por_espacio, v.espacios_totales, v.espacios_disponibles,
                ve.placa AS vehiculo
@@ -34,31 +34,39 @@ $resultado = $stmt->get_result();
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
         h2 { color: #333; }
+        h3 { color: #555; margin-bottom: 25px; }
         table { width: 100%; border-collapse: collapse; background: #fff; margin-top: 20px; }
         th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
         th { background-color: #007bff; color: white; }
         tr:nth-child(even) { background-color: #f2f2f2; }
-        .btn-nuevo {
-            display: inline-block; background-color: #28a745; color: white;
-            padding: 8px 12px; border-radius: 5px; text-decoration: none;
-            font-weight: bold; margin-bottom: 15px;
+        .btn {
+            display: inline-block; padding: 8px 12px; border-radius: 5px;
+            text-decoration: none; font-weight: bold; margin-right: 10px;
         }
-        .btn-nuevo:hover { background-color: #218838; }
-        .btn-volver {
-            display: inline-block; background-color: #6c757d; color: white;
-            padding: 8px 12px; border-radius: 5px; text-decoration: none;
-            font-weight: bold; margin-bottom: 15px; margin-left: 10px;
-        }
-        .btn-volver:hover { background-color: #5a6268; }
+        .btn-crear { background-color: #28a745; color: white; }
+        .btn-crear:hover { background-color: #218838; }
+        .btn-secundario { background-color: #6c757d; color: white; }
+        .btn-secundario:hover { background-color: #5a6268; }
+        .btn-cerrar { background-color: #dc3545; color: white; float: right; }
+        .btn-cerrar:hover { background-color: #c82333; }
         .acciones a { margin-right: 8px; text-decoration: none; color: #007bff; }
         .acciones a:hover { text-decoration: underline; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <h2>🛣️ Mis Viajes</h2>
+    <div class="top-bar">
+        <div>
+            <h2>🛣️ Mis Viajes</h2>
+            <h3>Bienvenido, <?php echo htmlspecialchars($_SESSION['nombre']); ?> 👋</h3>
+        </div>
+        <a href="../../cerrar_sesion.php" class="btn btn-cerrar">🔒 Cerrar sesión</a>
+    </div>
 
-    <a href="crear.php" class="btn-nuevo">+ Crear nuevo viaje</a>
-    <a href="../vehiculos/listar.php" class="btn-volver">← Volver a mis vehículos</a>
+    <div style="margin-bottom: 15px;">
+        <a href="crear.php" class="btn btn-crear">+ Crear nuevo viaje</a>
+        <a href="../vehiculos/listar.php" class="btn btn-secundario">🚗 Ver mis vehículos</a>
+    </div>
 
     <table>
         <thead>
@@ -82,7 +90,7 @@ $resultado = $stmt->get_result();
                         <td><?php echo htmlspecialchars($fila['vehiculo']); ?></td>
                         <td><?php echo htmlspecialchars($fila['lugar_salida']); ?></td>
                         <td><?php echo htmlspecialchars($fila['lugar_llegada']); ?></td>
-                        <td><?php echo htmlspecialchars($fila['fecha_hora']); ?></td>
+                        <td><?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($fila['fecha_hora']))); ?></td>
                         <td>₡<?php echo number_format($fila['costo_por_espacio'], 2); ?></td>
                         <td><?php echo $fila['espacios_totales']; ?></td>
                         <td><?php echo $fila['espacios_disponibles']; ?></td>
