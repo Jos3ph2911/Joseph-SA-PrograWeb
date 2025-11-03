@@ -2,6 +2,9 @@
 include("config/conexion.php");
 include("config/correo.php");
 
+// Determinar origen (login o index principal)
+$origen = $_GET['origen'] ?? 'index';
+
 $errores = [];
 $exito = "";
 $nombre = $apellido = $cedula = $fecha = $correo = $telefono = $rol = "";
@@ -33,6 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores['telefono'] = "Teléfono inválido. Use solo números, espacios, + o - (6-20 caracteres).";
     }
 
+    // Verificar duplicados
     $verificar = $conexion->prepare("SELECT correo, cedula FROM usuarios WHERE correo = ? OR cedula = ?");
     $verificar->bind_param("ss", $correo, $cedula);
     $verificar->execute();
@@ -85,8 +89,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <title>Registro - Aventones</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; }
-        form { max-width: 480px; }
+        body { font-family: Arial, sans-serif; margin: 30px; background:#f8f9fa; }
+        form { max-width: 480px; margin:auto; background:white; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
         label { font-weight: bold; display:block; margin-top:8px; }
         input, select { width: 100%; padding: 6px; margin-top: 4px; box-sizing: border-box; }
         .mensaje { padding: 10px; border-radius: 6px; margin-bottom: 15px; }
@@ -95,7 +99,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .campo-error { border: 1px solid #e74c3c; background-color: #fdecea; }
         .texto-error { color: #e74c3c; font-size: 0.9em; margin-top:6px; margin-bottom: 6px; }
         .fila { margin-bottom: 6px; }
-        button { margin-top:10px; padding:8px 14px; }
+        button { margin-top:10px; padding:8px 14px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; }
+        button:hover { background:#0056b3; }
         .volver {
             display: inline-block;
             margin-top: 15px;
@@ -110,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-    <h2>Registro de Usuario</h2>
+    <h2 style="text-align:center;">Registro de Usuario</h2>
 
     <?php if ($exito): ?>
         <div class="mensaje exito"><?php echo $exito; ?></div>
@@ -122,7 +127,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <form method="POST" enctype="multipart/form-data" novalidate>
 
-        <!-- Campos (idénticos al original) -->
         <div class="fila">
             <label for="nombre">Nombre:</label>
             <input type="text" name="nombre" id="nombre" value="<?php echo htmlspecialchars($nombre); ?>" class="<?php echo isset($errores['nombre']) ? 'campo-error' : ''; ?>" required>
@@ -182,7 +186,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <button type="submit">Registrarse</button>
-        <a href="inicio_sesion.php" class="volver">⬅ Volver al inicio</a>
+
+        <!-- Botón de regreso inteligente -->
+        <a href="javascript:history.back()" class="volver">⬅ Volver</a>
     </form>
 
     <script>

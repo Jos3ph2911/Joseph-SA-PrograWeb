@@ -14,13 +14,14 @@ $lugar_salida = trim($_GET['salida'] ?? '');
 $lugar_llegada = trim($_GET['llegada'] ?? '');
 $fecha = trim($_GET['fecha'] ?? '');
 
-// Consulta base
+// Consulta base (solo choferes activos)
 $sql = "SELECT v.*, u.nombre AS nombre_chofer, u.apellido AS apellido_chofer,
                veh.marca, veh.modelo, veh.anio, veh.placa
         FROM viajes v
         INNER JOIN usuarios u ON v.id_chofer = u.id
         INNER JOIN vehiculos veh ON v.id_vehiculo = veh.id
-        WHERE v.espacios_disponibles > 0";  // eliminamos el filtro de tiempo por ahora
+        WHERE v.espacios_disponibles > 0
+          AND u.estado = 'ACTIVA'";
 
 // Condiciones dinámicas
 $condiciones = [];
@@ -63,15 +64,6 @@ if (!$stmt->execute()) {
 }
 
 $resultado = $stmt->get_result();
-
-// --- Depuración temporal ---
-if (isset($_GET['debug'])) {
-    echo "<pre>";
-    echo "SQL ejecutado:\n" . $sql . "\n\n";
-    echo "Parámetros:\n";
-    print_r($parametros);
-    echo "</pre>";
-}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -125,6 +117,11 @@ if (isset($_GET['debug'])) {
         th { background: #007bff; color: white; }
         tr:hover { background: #f1f1f1; }
         .acciones { display: flex; gap: 10px; }
+        .panel-botones {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
         .volver {
             background: #6c757d;
             color: white;
@@ -133,7 +130,12 @@ if (isset($_GET['debug'])) {
             text-decoration: none;
         }
         .volver:hover { background: #5a6268; }
-        .contenedor-botones { margin-top: 15px; }
+        .btn-ver-reservas {
+            background: #17a2b8;
+        }
+        .btn-ver-reservas:hover {
+            background: #138496;
+        }
     </style>
 </head>
 <body>
@@ -185,7 +187,8 @@ if (isset($_GET['debug'])) {
         </tbody>
     </table>
 
-    <div class="contenedor-botones">
+    <div class="panel-botones">
+        <a href="mis_reservas.php" class="btn btn-ver-reservas">📋 Ver Mis Reservas</a>
         <a href="../cerrar_sesion.php" class="volver">Cerrar Sesión</a>
     </div>
 

@@ -6,14 +6,16 @@ $lugar_salida = $_GET['salida'] ?? '';
 $lugar_llegada = $_GET['llegada'] ?? '';
 $orden = $_GET['orden'] ?? 'fecha_asc';
 
-// Consulta base: solo viajes futuros con espacios disponibles
+// Consulta base: solo viajes futuros con espacios disponibles y chofer activo
 $sql = "SELECT v.titulo, v.lugar_salida, v.lugar_llegada, v.fecha_hora, 
                v.costo_por_espacio, v.espacios_disponibles,
                veh.marca, veh.modelo, veh.anio
         FROM viajes v
         INNER JOIN vehiculos veh ON v.id_vehiculo = veh.id
+        INNER JOIN usuarios u ON v.id_chofer = u.id
         WHERE v.fecha_hora >= NOW() 
-        AND v.espacios_disponibles > 0";
+        AND v.espacios_disponibles > 0
+        AND u.estado = 'ACTIVA'";
 
 // Aplicar filtros si existen
 $parametros = [];
@@ -108,7 +110,7 @@ $resultado = $stmt->get_result();
         flex-wrap: wrap;
         margin-bottom: 20px;
     }
-    input, select, button {
+    input, select, button, a.limpiar {
         padding: 8px;
         border: 1px solid #ccc;
         border-radius: 5px;
@@ -128,6 +130,15 @@ $resultado = $stmt->get_result();
     }
     button:hover {
         background: #0056b3;
+    }
+    a.limpiar {
+        background: #6c757d;
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+    }
+    a.limpiar:hover {
+        background: #5a6268;
     }
     table {
         width: 100%;
@@ -178,6 +189,7 @@ $resultado = $stmt->get_result();
             <option value="llegada_desc" <?php if($orden=="llegada_desc") echo "selected"; ?>>Lugar de llegada (Z-A)</option>
         </select>
         <button type="submit">Buscar</button>
+        <a href="indexPrincipal.php" class="limpiar">Limpiar</a>
     </form>
 
     <table>

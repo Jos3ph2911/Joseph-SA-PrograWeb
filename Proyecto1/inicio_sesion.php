@@ -7,8 +7,8 @@ $correo = "";
 
 // Si ya hay sesión activa, redirigir al panel correspondiente
 if (isset($_SESSION['rol'])) {
-    if ($_SESSION['rol'] == 'admin') header("Location: administrador/panel.php");
-    elseif ($_SESSION['rol'] == 'chofer') header("Location: chofer/vehiculos/listar.php");
+    if ($_SESSION['rol'] == 'administrador') header("Location: administrador/panel.php");
+    elseif ($_SESSION['rol'] == 'chofer') header("Location: chofer/viajes/listar.php");
     elseif ($_SESSION['rol'] == 'pasajero') header("Location: pasajero/buscar_viajes.php");
     exit();
 }
@@ -29,9 +29,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($resultado->num_rows > 0) {
             $usuario = $resultado->fetch_assoc();
 
+            // Caso especial: el admin usa MD5 (de tu script SQL original)
+            $esAdmin = ($usuario['correo'] === 'admin@aventones.com');
+
+            // Verificar estado de cuenta
             if ($usuario['estado'] != "ACTIVA") {
                 $errores['general'] = "Su cuenta aún no está activada. Revise su correo.";
-            } elseif (password_verify($contrasena, $usuario['contrasena'])) {
+            } 
+            // Verificar contraseña según tipo de usuario
+            elseif (
+                (!$esAdmin && password_verify($contrasena, $usuario['contrasena'])) ||
+                ($esAdmin && $usuario['contrasena'] === md5($contrasena))
+            ) {
                 // Crear sesión
                 $_SESSION['id'] = $usuario['id'];
                 $_SESSION['nombre'] = $usuario['nombre'];
@@ -40,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Redirigir según rol
                 switch ($usuario['rol']) {
-                    case 'admin':
+                    case 'administrador':
                         header("Location: administrador/panel.php");
                         break;
                     case 'chofer':
@@ -67,14 +76,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <title>Inicio de Sesión - Aventones</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 50px; text-align:center; }
-        form { display:inline-block; background:#fff; padding:25px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
+        body { font-family: Arial, sans-serif; margin: 50px; text-align:center; background:#f8f9fa; }
+        form { display:inline-block; background:#fff; padding:25px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); width:300px; }
         input { width: 100%; padding: 8px; margin: 8px 0; border-radius:5px; border:1px solid #ccc; }
-        button { padding:8px 15px; border:none; background:#007bff; color:white; border-radius:5px; cursor:pointer; }
+        button { padding:8px 15px; border:none; background:#007bff; color:white; border-radius:5px; cursor:pointer; width:100%; }
         button:hover { background:#0056b3; }
         .error { color:#c0392b; margin-bottom:10px; font-weight:bold; }
         .enlace { display:block; margin-top:10px; color:#007bff; text-decoration:none; }
         .enlace:hover { text-decoration:underline; }
+        .volver {
+            display:inline-block;
+            margin-top:20px;
+            padding:8px 15px;
+            background:#6c757d;
+            color:white;
+            border-radius:5px;
+            text-decoration:none;
+        }
+        .volver:hover { background:#5a6268; }
     </style>
 </head>
 <body>
@@ -92,8 +111,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="password" name="contrasena" required><br>
 
         <button type="submit">Iniciar Sesión</button>
+
+        <a class="enlace" href="registro.php">¿No tiene cuenta? Regístrese aquí</a>
     </form>
 
-    <a class="enlace" href="registro.php">¿No tiene cuenta? Regístrese aquí</a>
+    <a href="indexPrincipal.php" class="volver">Volver al Inicio</a>
 </body>
 </html>
