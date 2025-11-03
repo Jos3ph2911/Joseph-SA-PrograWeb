@@ -3,7 +3,7 @@ session_start();
 include("../../config/conexion.php");
 include("../../includes/autenticar.php");
 
-// Solo chofer puede acceder
+// Solo chofer
 if ($_SESSION['rol'] !== 'chofer') {
     header("Location: ../../inicio_sesion.php");
     exit();
@@ -11,7 +11,20 @@ if ($_SESSION['rol'] !== 'chofer') {
 
 $id_chofer = $_SESSION['id'];
 
-// Obtener los viajes del chofer con su vehículo
+// Contador de reservas pendientes
+$sqlPendientes = "
+    SELECT COUNT(*) AS total 
+    FROM reservas r
+    INNER JOIN viajes v ON r.id_viaje = v.id
+    WHERE v.id_chofer = ? AND r.estado = 'PENDIENTE'
+";
+$stmtPend = $conexion->prepare($sqlPendientes);
+$stmtPend->bind_param("i", $id_chofer);
+$stmtPend->execute();
+$resPend = $stmtPend->get_result()->fetch_assoc();
+$pendientes = $resPend['total'] ?? 0;
+
+// Obtener viajes
 $sql = "SELECT v.id, v.titulo, v.lugar_salida, v.lugar_llegada, v.fecha_hora, 
                v.costo_por_espacio, v.espacios_totales, v.espacios_disponibles,
                ve.placa AS vehiculo
@@ -47,11 +60,28 @@ $resultado = $stmt->get_result();
         .btn-crear:hover { background-color: #218838; }
         .btn-secundario { background-color: #6c757d; color: white; }
         .btn-secundario:hover { background-color: #5a6268; }
+        .btn-azul { background-color: #007bff; color: white; position: relative; }
+        .btn-azul:hover { background-color: #0056b3; }
         .btn-cerrar { background-color: #dc3545; color: white; float: right; }
         .btn-cerrar:hover { background-color: #c82333; }
         .acciones a { margin-right: 8px; text-decoration: none; color: #007bff; }
         .acciones a:hover { text-decoration: underline; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+        /* Estilo del badge */
+        .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.8em;
+            font-weight: bold;
+            padding: 2px 6px;
+            min-width: 18px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -66,6 +96,12 @@ $resultado = $stmt->get_result();
     <div style="margin-bottom: 15px;">
         <a href="crear.php" class="btn btn-crear">+ Crear nuevo viaje</a>
         <a href="../vehiculos/listar.php" class="btn btn-secundario">🚗 Ver mis vehículos</a>
+        <a href="../reservas/reservas_recibidas.php" class="btn btn-azul">
+            📋 Ver reservas recibidas
+            <?php if ($pendientes > 0): ?>
+                <span class="badge"><?php echo $pendientes; ?></span>
+            <?php endif; ?>
+        </a>
     </div>
 
     <table>
