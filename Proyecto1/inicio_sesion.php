@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         header("Location: administrador/panel.php");
                         break;
                     case 'chofer':
-                        header("Location: chofer/vehiculos/listar.php");
+                        header("Location: chofer/viajes/listar.php");
                         break;
                     case 'pasajero':
                         header("Location: pasajero/buscar_viajes.php");

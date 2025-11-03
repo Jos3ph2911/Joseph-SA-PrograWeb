@@ -2,14 +2,11 @@
 include("config/conexion.php");
 include("config/correo.php");
 
-$errores = [];  // para errores específicos
-$exito = "";    // mensaje general de éxito
-
-// Inicializar variables (para mantener datos)
+$errores = [];
+$exito = "";
 $nombre = $apellido = $cedula = $fecha = $correo = $telefono = $rol = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Limpiar entradas
     $nombre = trim($_POST['nombre']);
     $apellido = trim($_POST['apellido']);
     $cedula = trim($_POST['cedula']);
@@ -19,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contrasena = $_POST['contrasena'];
     $rol = $_POST['rol'];
 
-    // -------- VALIDACIONES --------
+    // --- VALIDACIONES ---
     if ($nombre == "") $errores['nombre'] = "Debe ingresar su nombre.";
     if ($apellido == "") $errores['apellido'] = "Debe ingresar su apellido.";
     if ($cedula == "") $errores['cedula'] = "Debe ingresar su número de cédula.";
@@ -28,19 +25,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) $errores['correo'] = "Formato de correo no válido.";
     if ($contrasena == "") $errores['contrasena'] = "Debe ingresar una contraseña.";
     elseif (strlen($contrasena) < 6) $errores['contrasena'] = "La contraseña debe tener al menos 6 caracteres.";
-    if ($rol == "") $errores['rol'] = "Debe seleccionar un rol (Chofer o Pasajero).";
+    if ($rol == "") $errores['rol'] = "Debe seleccionar un rol.";
 
-    // Validación del teléfono (ahora obligatorio)
     if ($telefono == "") {
         $errores['telefono'] = "Debe ingresar su teléfono.";
-    } else {
-        // patrón básico: dígitos, espacios, +, - y entre 6 y 20 caracteres
-        if (!preg_match('/^[0-9+\-\s]{6,20}$/', $telefono)) {
-            $errores['telefono'] = "Teléfono inválido. Use solo números, espacios, + o - (6-20 caracteres).";
-        }
+    } elseif (!preg_match('/^[0-9+\-\s]{6,20}$/', $telefono)) {
+        $errores['telefono'] = "Teléfono inválido. Use solo números, espacios, + o - (6-20 caracteres).";
     }
 
-    // Validar duplicados
     $verificar = $conexion->prepare("SELECT correo, cedula FROM usuarios WHERE correo = ? OR cedula = ?");
     $verificar->bind_param("ss", $correo, $cedula);
     $verificar->execute();
@@ -52,12 +44,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Validar foto
     if (!isset($_FILES['foto']) || $_FILES['foto']['error'] != 0) {
-        $errores['foto'] = "Debe subir una fotografía para completar el registro.";
+        $errores['foto'] = "Debe subir una fotografía.";
     }
 
-    // -------- PROCESAR --------
     if (empty($errores)) {
         $carpetaDestino = __DIR__ . "/subidas/fotos_usuarios/";
         if (!is_dir($carpetaDestino)) mkdir($carpetaDestino, 0777, true);
@@ -69,7 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errores['foto'] = "Error al subir la imagen. Intente nuevamente.";
         } else {
             $foto = "subidas/fotos_usuarios/" . $nombreArchivo;
-
             $token = bin2hex(random_bytes(16));
             $hash = password_hash($contrasena, PASSWORD_BCRYPT);
 
@@ -81,7 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($stmt->execute()) {
                 enviarCorreoActivacion($correo, $nombre, $token);
                 $exito = "✅ Registro exitoso. Revise su correo para activar la cuenta.";
-                // Limpiar campos tras éxito
                 $nombre = $apellido = $cedula = $fecha = $correo = $telefono = $rol = "";
             } else {
                 $errores['general'] = "Error al registrar el usuario. Intente más tarde.";
@@ -108,6 +96,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .texto-error { color: #e74c3c; font-size: 0.9em; margin-top:6px; margin-bottom: 6px; }
         .fila { margin-bottom: 6px; }
         button { margin-top:10px; padding:8px 14px; }
+        .volver {
+            display: inline-block;
+            margin-top: 15px;
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 14px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .volver:hover { background-color: #5a6268; }
     </style>
 </head>
 <body>
@@ -123,6 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <form method="POST" enctype="multipart/form-data" novalidate>
 
+        <!-- Campos (idénticos al original) -->
         <div class="fila">
             <label for="nombre">Nombre:</label>
             <input type="text" name="nombre" id="nombre" value="<?php echo htmlspecialchars($nombre); ?>" class="<?php echo isset($errores['nombre']) ? 'campo-error' : ''; ?>" required>
@@ -182,10 +182,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <button type="submit">Registrarse</button>
+        <a href="inicio_sesion.php" class="volver">⬅ Volver al inicio</a>
     </form>
 
     <script>
-        // Cuando el usuario empiece a escribir o cambie un campo, eliminamos el mensaje de error
         document.querySelectorAll("input, select").forEach(campo => {
             campo.addEventListener("input", () => {
                 const errorDiv = document.getElementById("error-" + campo.name);
