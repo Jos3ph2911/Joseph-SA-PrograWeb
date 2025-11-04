@@ -3,7 +3,6 @@ session_start();
 include("../../config/conexion.php");
 include("../../includes/autenticar.php");
 
-// Solo chofer puede acceder
 if ($_SESSION['rol'] !== 'chofer') {
     header("Location: ../../inicio_sesion.php");
     exit();
@@ -13,7 +12,6 @@ $id_chofer = $_SESSION['id'];
 $errores = [];
 $exito = "";
 
-// Validar que venga el ID
 if (!isset($_GET['id'])) {
     header("Location: listar.php");
     exit();
@@ -21,7 +19,6 @@ if (!isset($_GET['id'])) {
 
 $id_viaje = $_GET['id'];
 
-// Obtener datos del viaje
 $sqlViaje = "SELECT * FROM viajes WHERE id = ? AND id_chofer = ?";
 $stmt = $conexion->prepare($sqlViaje);
 $stmt->bind_param("ii", $id_viaje, $id_chofer);
@@ -33,14 +30,12 @@ if (!$viaje) {
     exit();
 }
 
-// Obtener vehículos del chofer
 $sqlVehiculos = "SELECT id, placa, marca, modelo FROM vehiculos WHERE id_usuario = ?";
 $stmtVeh = $conexion->prepare($sqlVehiculos);
 $stmtVeh->bind_param("i", $id_chofer);
 $stmtVeh->execute();
 $vehiculos = $stmtVeh->get_result();
 
-// Inicializar variables con los datos del viaje
 $titulo = $viaje['titulo'];
 $lugar_salida = $viaje['lugar_salida'];
 $lugar_llegada = $viaje['lugar_llegada'];
@@ -58,7 +53,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $costo_por_espacio = trim($_POST['costo_por_espacio']);
     $espacios_totales = trim($_POST['espacios_totales']);
 
-    // Validaciones
     if ($titulo == "") $errores['titulo'] = "Debe ingresar un título para el viaje.";
     if ($vehiculo_id == "") $errores['vehiculo_id'] = "Debe seleccionar un vehículo.";
     if ($lugar_salida == "") $errores['lugar_salida'] = "Debe indicar el lugar de salida.";
@@ -104,20 +98,131 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <title>Editar Viaje - Aventones</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9; }
-        form { max-width: 450px; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        label { font-weight: bold; display: block; margin-top: 10px; }
-        input, select { width: 100%; padding: 7px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
-        button { margin-top: 20px; padding: 10px 15px; border: none; background: #007bff; color: white; border-radius: 5px; cursor: pointer; }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #007bff;
+            color: white;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        header img {
+            height: 180px;
+            width: auto;
+            object-fit: contain;
+            border: none;
+            border-radius: 0;
+        }
+
+        main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            max-width: 450px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 7px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
         button:hover { background: #0056b3; }
-        .mensaje { padding: 10px; border-radius: 6px; margin-bottom: 15px; }
-        .exito { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .campo-error { border: 1px solid #e74c3c; background-color: #fdecea; }
-        .texto-error { color: #e74c3c; font-size: 0.9em; margin-bottom: 8px; }
-        .enlaces { margin-top: 20px; }
-        .btn-volver { display: inline-block; background-color: #6c757d; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-weight: bold; }
+
+        .mensaje {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            max-width: 450px;
+        }
+
+        .exito {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .campo-error {
+            border: 1px solid #e74c3c;
+            background-color: #fdecea;
+        }
+
+        .texto-error {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .btn-volver {
+            display: inline-block;
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
         .btn-volver:hover { background-color: #5a6268; }
+
+        footer {
+            background: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+            font-size: 0.9em;
+        }
     </style>
     <script>
         function limpiarError(idCampo, idError) {
@@ -128,7 +233,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </script>
 </head>
 <body>
-    <h2>✏️ Editar Viaje</h2>
+
+<header>
+    <img src="../../logo/logo.png" alt="Logo Aventones">
+        <a href="listar.php" class="btn-volver">← Volver</a>
+</header>
+
+<main>
+    <h2>Editar viaje</h2>
 
     <?php if ($exito): ?>
         <div class="mensaje exito"><?php echo $exito; ?></div>
@@ -190,8 +302,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Guardar cambios</button>
     </form>
 
-    <div class="enlaces">
-        <a href="listar.php" class="btn-volver">← Volver a mis viajes</a>
-    </div>
+    <br>
+</main>
+
+<footer>
+    © <?php echo date("Y"); ?> Aventones | Proyecto ISW-613
+</footer>
+
 </body>
 </html>

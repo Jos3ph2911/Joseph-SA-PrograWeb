@@ -1,0 +1,363 @@
+/* =============================================
+   ESTILOS GLOBALES - PROYECTO AVENTONES
+   ============================================= */
+
+/* ------------------------
+   CONFIGURACIÓN GENERAL
+   ------------------------ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+/* ------------------------
+   CABECERA GLOBAL
+   ------------------------ */
+header {
+    background: #007bff;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    font-size: 1.6em;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.7em;
+}
+
+/* ------------------------
+   CONTENEDOR PRINCIPAL
+   ------------------------ */
+main.contenedor {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+/* ------------------------
+   FORMULARIOS
+   ------------------------ */
+.formulario {
+    background: white;
+    padding: 35px 40px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 420px;
+    text-align: left;
+}
+
+.formulario h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #222;
+    font-size: 1.4em;
+}
+
+.formulario label {
+    display: block;
+    font-weight: 600;
+    margin-top: 12px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.formulario input[type="text"],
+.formulario input[type="email"],
+.formulario input[type="password"],
+.formulario input[type="number"],
+.formulario input[type="date"],
+.formulario select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: border-color 0.2s;
+    font-size: 0.95em;
+    background: #fff;
+}
+
+.formulario input:focus,
+.formulario select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+/* ------------------------
+   BOTONES PRINCIPALES
+   ------------------------ */
+.btn {
+    display: block;
+    width: 100%;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 10px 15px;
+    margin-top: 18px;
+    text-align: center;
+    transition: background 0.2s;
+    text-decoration: none;
+    font-size: 1em;
+}
+
+.btn:hover {
+    background: #0056b3;
+}
+
+/* ------------------------
+   BOTONES SECUNDARIOS
+   ------------------------ */
+.btn-secundario {
+    display: inline-block;
+    background: #6c757d;
+    color: white;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-top: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-secundario:hover {
+    background: #5a6268;
+}
+
+/* Tamaño pequeño para botones secundarios */
+.btn-pequeno {
+    font-size: 0.9em;
+    padding: 7px 14px;
+}
+
+/* ------------------------
+   ENLACE PEQUEÑO CENTRADO
+   ------------------------ */
+.enlace-pequeno {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 0.9em;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.enlace-pequeno:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
+
+/* ------------------------
+   TABLAS
+   ------------------------ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #007bff;
+    color: white;
+    font-weight: 600;
+}
+
+tr:hover {
+    background: #f1f1f1;
+}
+
+/* ------------------------
+   MENSAJES Y ALERTAS
+   ------------------------ */
+.mensaje-exito {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.mensaje-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* ------------------------
+   PIE DE PÁGINA
+   ------------------------ */
+footer {
+    background: #007bff;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 0.9em;
+    margin-top: auto;
+    width: 100%;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ------------------------
+   UTILIDADES
+   ------------------------ */
+.texto-centro {
+    text-align: center;
+}
+
+.mt-1 { margin-top: 10px; }
+.mt-2 { margin-top: 20px; }
+.mt-3 { margin-top: 30px; }
+.mb-1 { margin-bottom: 10px; }
+.mb-2 { margin-bottom: 20px; }
+
+.oculto { display: none; }
+
+/* ------------------------
+   BOTONES DE ACCIÓN PEQUEÑOS
+   ------------------------ */
+.acciones a {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    font-size: 0.9em;
+    margin-right: 5px;
+}
+
+.btn-editar { background: #28a745; }
+.btn-editar:hover { background: #218838; }
+
+.btn-eliminar { background: #dc3545; }
+.btn-eliminar:hover { background: #b52b38; }
+
+.btn-cancelar { background: #ff8800; }
+.btn-cancelar:hover { background: #e06e00; }
+
+/* ------------------------
+   FORMULARIOS SECUNDARIOS
+   ------------------------ */
+.form-secundario {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+/* ------------------------
+   MODALES (FUTURO USO)
+   ------------------------ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-contenido {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    max-width: 500px;
+    text-align: center;
+}
+
+/* ------------------------
+   RESPONSIVE
+   ------------------------ */
+@media (max-width: 768px) {
+    .formulario {
+        width: 90%;
+        padding: 25px 20px;
+    }
+
+    table th, table td {
+        padding: 8px;
+        font-size: 0.9em;
+    }
+
+    header {
+        font-size: 1.3em;
+    }
+
+    footer {
+        font-size: 0.85em;
+    }
+
+    .btn, .btn-secundario {
+        font-size: 0.95em;
+    }
+}
+.encabezado {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.perfil-chofer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.foto-chofer {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 0 6px rgba(0,0,0,0.2);
+}

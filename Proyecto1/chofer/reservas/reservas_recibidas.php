@@ -3,7 +3,6 @@ session_start();
 include("../../config/conexion.php");
 include("../../includes/autenticar.php");
 
-// Solo chofer puede acceder
 if ($_SESSION['rol'] !== 'chofer') {
     header("Location: ../../inicio_sesion.php");
     exit();
@@ -11,7 +10,6 @@ if ($_SESSION['rol'] !== 'chofer') {
 
 $id_chofer = $_SESSION['id'];
 
-// Consulta de reservas recibidas
 $sql = "SELECT 
             r.id AS id_reserva, 
             r.estado AS estado_reserva, 
@@ -29,7 +27,6 @@ $stmt->bind_param("i", $id_chofer);
 $stmt->execute();
 $resultado = $stmt->get_result();
 
-// Función para mostrar etiquetas de estado
 function badgeEstado($estado) {
     switch ($estado) {
         case 'PENDIENTE':
@@ -52,28 +49,123 @@ function badgeEstado($estado) {
     <meta charset="UTF-8">
     <title>Reservas Recibidas - Aventones</title>
     <style>
-        body { font-family: Arial, sans-serif; background:#f8f9fa; margin: 40px; }
-        h2 { color:#333; margin-bottom:10px; }
-        table { width:100%; border-collapse: collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:0 0 6px rgba(0,0,0,0.1); }
-        th, td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
-        th { background:#007bff; color:white; }
-        tr:hover { background:#f1f1f1; }
-        .acciones a {
-            display:inline-block; padding:5px 10px; border-radius:5px; text-decoration:none;
-            font-size:0.9em; margin-right:5px; color:white;
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
-        .aceptar { background:#28a745; }
-        .aceptar:hover { background:#218838; }
-        .rechazar { background:#dc3545; }
-        .rechazar:hover { background:#c82333; }
-        .cancelar { background:#6c757d; }
-        .cancelar:hover { background:#5a6268; }
-        .volver { background:#007bff; color:white; padding:8px 14px; border-radius:5px; text-decoration:none; display:inline-block; margin-top:20px; }
-        .volver:hover { background:#0056b3; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #007bff;
+            color: white;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        header img {
+            height: 180px;
+            width: auto;
+            object-fit: contain;
+            border: none;
+            border-radius: 0;
+        }
+
+        main {
+            flex: 1;
+            padding: 30px 40px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+        }
+
+        tr:hover { background: #f1f1f1; }
+
+        .acciones a {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.9em;
+            margin-right: 5px;
+            color: white;
+        }
+
+        .aceptar { background: #28a745; }
+        .aceptar:hover { background: #218838; }
+
+        .rechazar { background: #dc3545; }
+        .rechazar:hover { background: #c82333; }
+
+        .cancelar { background: #6c757d; }
+        .cancelar:hover { background: #5a6268; }
+
+        .btn-volver {
+            display: inline-block;
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-volver:hover { background-color: #5a6268; }
+
+        footer {
+            background: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
-    <h2>📋 Reservas Recibidas</h2>
+
+<header>
+    <img src="../../logo/logo.png" alt="Logo Aventones">
+    <a href="../viajes/listar.php" class="btn-volver">← Volver</a>
+</header>
+
+<main>
+    <h2>Reservas recibidas</h2>
     <p>Gestione las solicitudes de sus viajes.</p>
 
     <table>
@@ -115,7 +207,11 @@ function badgeEstado($estado) {
             <?php endif; ?>
         </tbody>
     </table>
+</main>
 
-    <a href="../viajes/listar.php" class="volver">← Volver a mis viajes</a>
+<footer>
+    © <?php echo date("Y"); ?> Aventones | Proyecto ISW-613
+</footer>
+
 </body>
 </html>

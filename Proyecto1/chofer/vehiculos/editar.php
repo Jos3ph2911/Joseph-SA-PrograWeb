@@ -51,7 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $anio = trim($_POST['anio']);
     $capacidad = trim($_POST['capacidad']);
 
-    // Validaciones
     if ($placa == "") $errores['placa'] = "Debe ingresar la placa del vehículo.";
     if ($color == "") $errores['color'] = "Debe ingresar el color.";
     if ($marca == "") $errores['marca'] = "Debe ingresar la marca.";
@@ -63,7 +62,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif (!is_numeric($capacidad) || $capacidad < 1)
         $errores['capacidad'] = "La capacidad debe ser un número mayor que 0.";
 
-    // Manejo de foto
     $nuevaFoto = false;
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
         $nuevaFoto = true;
@@ -80,7 +78,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (move_uploaded_file($_FILES['foto']['tmp_name'], $rutaCompleta)) {
                 $rutaRelativa = "subidas/fotos_vehiculos/" . $nombreArchivo;
 
-                // Eliminar la foto anterior si existe
                 if ($fotoActual && file_exists(__DIR__ . "/../../" . $fotoActual)) {
                     unlink(__DIR__ . "/../../" . $fotoActual);
                 }
@@ -114,25 +111,135 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <title>Editar Vehículo - Aventones</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
-        h2 { color: #333; }
-        form { background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 480px; }
-        label { font-weight: bold; }
-        input { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 5px; }
-        .campo-error { border: 1px solid #e74c3c; background-color: #fdecea; }
-        .texto-error { color: #e74c3c; font-size: 0.9em; margin-bottom: 10px; }
-        .mensaje { padding: 10px; border-radius: 6px; margin-bottom: 15px; }
-        .exito { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .btn-guardar { background: #007bff; color: white; padding: 10px 14px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #007bff;
+            color: white;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        header img {
+            height: 180px;
+            width: auto;
+            object-fit: contain;
+            border: none;
+            border-radius: 0;
+        }
+
+        main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        form {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 480px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .campo-error {
+            border: 1px solid #e74c3c;
+            background-color: #fdecea;
+        }
+
+        .texto-error {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .mensaje {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            max-width: 480px;
+        }
+
+        .exito {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .btn-guardar {
+            background: #007bff;
+            color: white;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
         .btn-guardar:hover { background: #0056b3; }
+
         .btn-volver {
-            display: inline-block; background: #6c757d; color: white;
-            padding: 8px 12px; border-radius: 5px; text-decoration: none;
-            font-weight: bold; margin-top: 10px;
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
         }
         .btn-volver:hover { background: #5a6268; }
-        img { margin-top: 10px; border-radius: 8px; }
+
+        img {
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        footer {
+            background: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+            font-size: 0.9em;
+        }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -149,7 +256,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </script>
 </head>
 <body>
-    <h2>✏️ Editar vehículo</h2>
+
+<header>
+    <img src="../../logo/logo.png" alt="Logo Aventones">
+    <a href="listar.php" class="btn-volver">← Volver a mis vehículos</a>
+</header>
+
+<main>
+    <h2>Editar vehículo</h2>
 
     <?php if ($exito): ?>
         <div class="mensaje exito"><?php echo $exito; ?></div>
@@ -198,6 +312,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit" class="btn-guardar">Guardar cambios</button>
     </form>
 
-    <a href="listar.php" class="btn-volver">← Volver a mis vehículos</a>
+</main>
+
+<footer>
+    © <?php echo date("Y"); ?> Aventones | Proyecto ISW-613
+</footer>
+
 </body>
 </html>

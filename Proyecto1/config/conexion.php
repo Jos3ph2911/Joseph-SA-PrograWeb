@@ -1,4 +1,5 @@
 <?php
+//Conexión a la base de datos
 $conexion = new mysqli("localhost", "Joseph", "Jos123", "isw613_proyecto1");
 
 if ($conexion->connect_error) {

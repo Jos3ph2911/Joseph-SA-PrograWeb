@@ -25,7 +25,7 @@ function enviarCorreoActivacion($correoDestino, $nombre, $token) {
 
         // Contenido del correo
         $mail->isHTML(true);
-        $mail->Subject = 'Activación de cuenta - Aventones';
+        $mail->Subject = 'Activacion de cuenta - Aventones';
 
         $enlace = "http://isw.utn.ac.cr/Proyecto1/activar.php?token=$token";
         $mail->Body = "
@@ -35,9 +35,7 @@ function enviarCorreoActivacion($correoDestino, $nombre, $token) {
             <a href='$enlace'>$enlace</a>
         ";
 
-        // (opcional) Depuración — muestra detalles de conexión
-        // $mail->SMTPDebug = 2;
-        // $mail->Debugoutput = 'html';
+
 
         $mail->send();
         return true;
