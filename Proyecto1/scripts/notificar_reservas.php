@@ -1,9 +1,4 @@
 <?php
-// ===============================================================
-// Script: notificar_reservas.php
-// Descripción: Identifica reservas con más de X minutos pendientes
-//              y notifica a los choferes por correo mediante PHPMailer.
-// ===============================================================
 
 // Mostrar errores en consola
 error_reporting(E_ALL);

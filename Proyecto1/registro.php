@@ -89,33 +89,133 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <title>Registro - Aventones</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; background:#f8f9fa; }
-        form { max-width: 480px; margin:auto; background:white; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
-        label { font-weight: bold; display:block; margin-top:8px; }
-        input, select { width: 100%; padding: 6px; margin-top: 4px; box-sizing: border-box; }
-        .mensaje { padding: 10px; border-radius: 6px; margin-bottom: 15px; }
-        .exito { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .campo-error { border: 1px solid #e74c3c; background-color: #fdecea; }
-        .texto-error { color: #e74c3c; font-size: 0.9em; margin-top:6px; margin-bottom: 6px; }
-        .fila { margin-bottom: 6px; }
-        button { margin-top:10px; padding:8px 14px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background:#f8f9fa;
+        }
+
+        h2 {
+            text-align:center;
+            margin-top:30px;
+            margin-bottom: 10px;
+            color:#333;
+        }
+
+        .mensaje {
+            max-width: 900px;
+            width: 90%;
+            margin: 10px auto;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .exito {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-registro {
+            max-width: 900px;
+            width: 90%;
+            margin: 20px auto 40px;
+            background:white;
+            padding:30px 50px;
+            border-radius:10px;
+            box-shadow:0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .grid-form {
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px 30px;
+        }
+
+        .campo {
+            display:flex;
+            flex-direction:column;
+        }
+
+        .campo label {
+            font-weight:bold;
+            margin-bottom:4px;
+        }
+
+        .campo input,
+        .campo select {
+            width:100%;
+            padding:8px;
+            border-radius:5px;
+            border:1px solid #ccc;
+            box-sizing:border-box;
+        }
+
+        .campo-error {
+            border: 1px solid #e74c3c;
+            background-color: #fdecea;
+        }
+
+        .texto-error {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top:4px;
+        }
+
+        .campo-full {
+            grid-column: 1 / 3;
+        }
+
+        button {
+            margin-top:15px;
+            padding:10px 16px;
+            background:#007bff;
+            color:white;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+            font-weight:bold;
+            min-width: 180px;
+        }
         button:hover { background:#0056b3; }
+
         .volver {
             display: inline-block;
-            margin-top: 15px;
+            margin-top: 10px;
             background-color: #6c757d;
             color: white;
-            padding: 8px 14px;
+            padding: 8px 16px;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
         }
         .volver:hover { background-color: #5a6268; }
+
+        .acciones-registro {
+            text-align:center;
+            margin-top:10px;
+        }
+
+        @media (max-width: 768px) {
+            .form-registro {
+                padding:20px;
+            }
+            .grid-form {
+                grid-template-columns: 1fr;
+            }
+            .campo-full {
+                grid-column: 1 / 2;
+            }
+        }
     </style>
 </head>
 <body>
-    <h2 style="text-align:center;">Registro de Usuario</h2>
+
+    <h2>Registro de Usuario</h2>
 
     <?php if ($exito): ?>
         <div class="mensaje exito"><?php echo $exito; ?></div>
@@ -125,70 +225,91 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="mensaje error"><?php echo $errores['general']; ?></div>
     <?php endif; ?>
 
-    <form method="POST" enctype="multipart/form-data" novalidate>
+    <form method="POST" enctype="multipart/form-data" novalidate class="form-registro">
+        <div class="grid-form">
 
-        <div class="fila">
-            <label for="nombre">Nombre:</label>
-            <input type="text" name="nombre" id="nombre" value="<?php echo htmlspecialchars($nombre); ?>" class="<?php echo isset($errores['nombre']) ? 'campo-error' : ''; ?>" required>
-            <?php if (isset($errores['nombre'])) echo "<div class='texto-error' id='error-nombre'>{$errores['nombre']}</div>"; ?>
+            <div class="campo">
+                <label for="nombre">Nombre:</label>
+                <input type="text" name="nombre" id="nombre"
+                       value="<?php echo htmlspecialchars($nombre); ?>"
+                       class="<?php echo isset($errores['nombre']) ? 'campo-error' : ''; ?>" required>
+                <?php if (isset($errores['nombre'])) echo "<div class='texto-error' id='error-nombre'>{$errores['nombre']}</div>"; ?>
+            </div>
+
+            <div class="campo">
+                <label for="apellido">Apellido:</label>
+                <input type="text" name="apellido" id="apellido"
+                       value="<?php echo htmlspecialchars($apellido); ?>"
+                       class="<?php echo isset($errores['apellido']) ? 'campo-error' : ''; ?>" required>
+                <?php if (isset($errores['apellido'])) echo "<div class='texto-error' id='error-apellido'>{$errores['apellido']}</div>"; ?>
+            </div>
+
+            <div class="campo">
+                <label for="cedula">Cédula:</label>
+                <input type="text" name="cedula" id="cedula"
+                       value="<?php echo htmlspecialchars($cedula); ?>"
+                       class="<?php echo isset($errores['cedula']) ? 'campo-error' : ''; ?>" required>
+                <?php if (isset($errores['cedula'])) echo "<div class='texto-error' id='error-cedula'>{$errores['cedula']}</div>"; ?>
+            </div>
+
+            <div class="campo">
+                <label for="fecha">Fecha de nacimiento:</label>
+                <input type="date" name="fecha_nacimiento" id="fecha"
+                       value="<?php echo htmlspecialchars($fecha); ?>"
+                       class="<?php echo isset($errores['fecha']) ? 'campo-error' : ''; ?>" required>
+                <?php if (isset($errores['fecha'])) echo "<div class='texto-error' id='error-fecha'>{$errores['fecha']}</div>"; ?>
+            </div>
+
+            <div class="campo">
+                <label for="correo">Correo electrónico:</label>
+                <input type="email" name="correo" id="correo"
+                       value="<?php echo htmlspecialchars($correo); ?>"
+                       class="<?php echo isset($errores['correo']) ? 'campo-error' : ''; ?>" required>
+                <?php if (isset($errores['correo'])) echo "<div class='texto-error' id='error-correo'>{$errores['correo']}</div>"; ?>
+            </div>
+
+            <div class="campo">
+                <label for="telefono">Teléfono:</label>
+                <input type="text" name="telefono" id="telefono"
+                       value="<?php echo htmlspecialchars($telefono); ?>"
+                       class="<?php echo isset($errores['telefono']) ? 'campo-error' : ''; ?>" required>
+                <?php if (isset($errores['telefono'])) echo "<div class='texto-error' id='error-telefono'>{$errores['telefono']}</div>"; ?>
+            </div>
+
+            <div class="campo">
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" name="contrasena" id="contrasena"
+                       class="<?php echo isset($errores['contrasena']) ? 'campo-error' : ''; ?>" required>
+                <?php if (isset($errores['contrasena'])) echo "<div class='texto-error' id='error-contrasena'>{$errores['contrasena']}</div>"; ?>
+            </div>
+
+            <div class="campo">
+                <label for="rol">Rol:</label>
+                <select name="rol" id="rol"
+                        class="<?php echo isset($errores['rol']) ? 'campo-error' : ''; ?>" required>
+                    <option value="">-- Seleccione --</option>
+                    <option value="chofer"   <?php echo ($rol == "chofer")   ? "selected" : ""; ?>>Chofer</option>
+                    <option value="pasajero" <?php echo ($rol == "pasajero") ? "selected" : ""; ?>>Pasajero</option>
+                </select>
+                <?php if (isset($errores['rol'])) echo "<div class='texto-error' id='error-rol'>{$errores['rol']}</div>"; ?>
+            </div>
+
+            <div class="campo campo-full">
+                <label for="foto">Fotografía:</label>
+                <input type="file" name="foto" id="foto" accept="image/*"
+                       class="<?php echo isset($errores['foto']) ? 'campo-error' : ''; ?>" required>
+                <?php if (isset($errores['foto'])) echo "<div class='texto-error' id='error-foto'>{$errores['foto']}</div>"; ?>
+            </div>
+
+            <div class="campo campo-full acciones-registro">
+                <button type="submit">Registrarse</button>
+            </div>
+
+            <div class="campo campo-full acciones-registro">
+                <a href="javascript:history.back()" class="volver">⬅ Volver</a>
+            </div>
+
         </div>
-
-        <div class="fila">
-            <label for="apellido">Apellido:</label>
-            <input type="text" name="apellido" id="apellido" value="<?php echo htmlspecialchars($apellido); ?>" class="<?php echo isset($errores['apellido']) ? 'campo-error' : ''; ?>" required>
-            <?php if (isset($errores['apellido'])) echo "<div class='texto-error' id='error-apellido'>{$errores['apellido']}</div>"; ?>
-        </div>
-
-        <div class="fila">
-            <label for="cedula">Cédula:</label>
-            <input type="text" name="cedula" id="cedula" value="<?php echo htmlspecialchars($cedula); ?>" class="<?php echo isset($errores['cedula']) ? 'campo-error' : ''; ?>" required>
-            <?php if (isset($errores['cedula'])) echo "<div class='texto-error' id='error-cedula'>{$errores['cedula']}</div>"; ?>
-        </div>
-
-        <div class="fila">
-            <label for="fecha">Fecha de nacimiento:</label>
-            <input type="date" name="fecha_nacimiento" id="fecha" value="<?php echo htmlspecialchars($fecha); ?>" class="<?php echo isset($errores['fecha']) ? 'campo-error' : ''; ?>" required>
-            <?php if (isset($errores['fecha'])) echo "<div class='texto-error' id='error-fecha'>{$errores['fecha']}</div>"; ?>
-        </div>
-
-        <div class="fila">
-            <label for="correo">Correo electrónico:</label>
-            <input type="email" name="correo" id="correo" value="<?php echo htmlspecialchars($correo); ?>" class="<?php echo isset($errores['correo']) ? 'campo-error' : ''; ?>" required>
-            <?php if (isset($errores['correo'])) echo "<div class='texto-error' id='error-correo'>{$errores['correo']}</div>"; ?>
-        </div>
-
-        <div class="fila">
-            <label for="telefono">Teléfono:</label>
-            <input type="text" name="telefono" id="telefono" value="<?php echo htmlspecialchars($telefono); ?>" class="<?php echo isset($errores['telefono']) ? 'campo-error' : ''; ?>" required>
-            <?php if (isset($errores['telefono'])) echo "<div class='texto-error' id='error-telefono'>{$errores['telefono']}</div>"; ?>
-        </div>
-
-        <div class="fila">
-            <label for="contrasena">Contraseña:</label>
-            <input type="password" name="contrasena" id="contrasena" class="<?php echo isset($errores['contrasena']) ? 'campo-error' : ''; ?>" required>
-            <?php if (isset($errores['contrasena'])) echo "<div class='texto-error' id='error-contrasena'>{$errores['contrasena']}</div>"; ?>
-        </div>
-
-        <div class="fila">
-            <label for="rol">Rol:</label>
-            <select name="rol" id="rol" class="<?php echo isset($errores['rol']) ? 'campo-error' : ''; ?>" required>
-                <option value="">-- Seleccione --</option>
-                <option value="chofer" <?php echo ($rol == "chofer") ? "selected" : ""; ?>>Chofer</option>
-                <option value="pasajero" <?php echo ($rol == "pasajero") ? "selected" : ""; ?>>Pasajero</option>
-            </select>
-            <?php if (isset($errores['rol'])) echo "<div class='texto-error' id='error-rol'>{$errores['rol']}</div>"; ?>
-        </div>
-
-        <div class="fila">
-            <label for="foto">Fotografía:</label>
-            <input type="file" name="foto" id="foto" accept="image/*" class="<?php echo isset($errores['foto']) ? 'campo-error' : ''; ?>" required>
-            <?php if (isset($errores['foto'])) echo "<div class='texto-error' id='error-foto'>{$errores['foto']}</div>"; ?>
-        </div>
-
-        <button type="submit">Registrarse</button>
-
-        <!-- Botón de regreso inteligente -->
-        <a href="javascript:history.back()" class="volver">⬅ Volver</a>
     </form>
 
     <script>

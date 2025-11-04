@@ -1,0 +1,74 @@
+-- Crear base de datos
+CREATE DATABASE IF NOT EXISTS isw613_proyecto1
+CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE isw613_proyecto1;
+
+
+-- Tabla de usuarios
+CREATE TABLE usuarios (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(50) NOT NULL,
+  apellido VARCHAR(50) NOT NULL,
+  cedula VARCHAR(20) NOT NULL UNIQUE,
+  fecha_nacimiento DATE NOT NULL,
+  correo VARCHAR(100) NOT NULL UNIQUE,
+  telefono VARCHAR(20),
+  foto VARCHAR(255),
+  contrasena VARCHAR(255) NOT NULL,
+  rol ENUM('administrador', 'chofer', 'pasajero') NOT NULL DEFAULT 'pasajero',
+  estado ENUM('PENDIENTE', 'ACTIVA', 'INACTIVA') NOT NULL DEFAULT 'PENDIENTE',
+  token_activacion VARCHAR(255),
+  creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Usuario administrador por defecto
+INSERT INTO usuarios (nombre, apellido, cedula, fecha_nacimiento, correo, telefono, contrasena, rol, estado)
+VALUES ('Admin', 'Aventones', '000000000', '1990-01-01', 'admin@aventones.com', '', MD5('Admin123'), 'administrador', 'ACTIVA');
+
+
+-- Tabla de vehículos
+
+CREATE TABLE vehiculos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_usuario INT NOT NULL,
+  placa VARCHAR(20) NOT NULL,
+  color VARCHAR(50),
+  marca VARCHAR(50),
+  modelo VARCHAR(50),
+  anio INT,
+  capacidad INT,
+  foto VARCHAR(255),
+  FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+
+-- Tabla de viajes
+
+CREATE TABLE viajes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_chofer INT NOT NULL,
+  id_vehiculo INT NOT NULL,
+  titulo VARCHAR(100) NOT NULL,
+  lugar_salida VARCHAR(100) NOT NULL,
+  lugar_llegada VARCHAR(100) NOT NULL,
+  fecha_hora DATETIME NOT NULL,
+  costo_por_espacio DECIMAL(10,2) NOT NULL,
+  espacios_totales INT NOT NULL,
+  espacios_disponibles INT NOT NULL,
+  FOREIGN KEY (id_chofer) REFERENCES usuarios(id),
+  FOREIGN KEY (id_vehiculo) REFERENCES vehiculos(id)
+);
+
+
+-- Tabla de reservas
+
+CREATE TABLE reservas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_viaje INT NOT NULL,
+  id_pasajero INT NOT NULL,
+  estado ENUM('PENDIENTE','ACEPTADA','RECHAZADA','CANCELADA') DEFAULT 'PENDIENTE',
+  fecha_reserva TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_viaje) REFERENCES viajes(id),
+  FOREIGN KEY (id_pasajero) REFERENCES usuarios(id)
+);

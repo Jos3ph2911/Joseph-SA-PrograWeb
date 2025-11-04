@@ -5,11 +5,12 @@ include("config/conexion.php");
 $errores = [];
 $correo = "";
 
-// Si ya hay sesión activa, redirigir al panel correspondiente
 if (isset($_SESSION['rol'])) {
-    if ($_SESSION['rol'] == 'administrador') header("Location: administrador/panel.php");
-    elseif ($_SESSION['rol'] == 'chofer') header("Location: chofer/viajes/listar.php");
-    elseif ($_SESSION['rol'] == 'pasajero') header("Location: pasajero/buscar_viajes.php");
+    switch ($_SESSION['rol']) {
+        case 'administrador': header("Location: administrador/panel.php"); break;
+        case 'chofer': header("Location: chofer/viajes/listar.php"); break;
+        case 'pasajero': header("Location: pasajero/buscar_viajes.php"); break;
+    }
     exit();
 }
 
@@ -28,36 +29,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($resultado->num_rows > 0) {
             $usuario = $resultado->fetch_assoc();
-
-            // Caso especial: el admin usa MD5 (de tu script SQL original)
             $esAdmin = ($usuario['correo'] === 'admin@aventones.com');
 
-            // Verificar estado de cuenta
             if ($usuario['estado'] != "ACTIVA") {
                 $errores['general'] = "Su cuenta aún no está activada. Revise su correo.";
-            } 
-            // Verificar contraseña según tipo de usuario
-            elseif (
+            } elseif (
                 (!$esAdmin && password_verify($contrasena, $usuario['contrasena'])) ||
                 ($esAdmin && $usuario['contrasena'] === md5($contrasena))
             ) {
-                // Crear sesión
                 $_SESSION['id'] = $usuario['id'];
                 $_SESSION['nombre'] = $usuario['nombre'];
                 $_SESSION['correo'] = $usuario['correo'];
                 $_SESSION['rol'] = $usuario['rol'];
 
-                // Redirigir según rol
                 switch ($usuario['rol']) {
-                    case 'administrador':
-                        header("Location: administrador/panel.php");
-                        break;
-                    case 'chofer':
-                        header("Location: chofer/viajes/listar.php");
-                        break;
-                    case 'pasajero':
-                        header("Location: pasajero/buscar_viajes.php");
-                        break;
+                    case 'administrador': header("Location: administrador/panel.php"); break;
+                    case 'chofer': header("Location: chofer/viajes/listar.php"); break;
+                    case 'pasajero': header("Location: pasajero/buscar_viajes.php"); break;
                 }
                 exit();
             } else {
@@ -69,52 +57,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Inicio de Sesión - Aventones</title>
+    <link rel="stylesheet" href="assets/estilos.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 50px; text-align:center; background:#f8f9fa; }
-        form { display:inline-block; background:#fff; padding:25px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); width:300px; }
-        input { width: 100%; padding: 8px; margin: 8px 0; border-radius:5px; border:1px solid #ccc; }
-        button { padding:8px 15px; border:none; background:#007bff; color:white; border-radius:5px; cursor:pointer; width:100%; }
-        button:hover { background:#0056b3; }
-        .error { color:#c0392b; margin-bottom:10px; font-weight:bold; }
-        .enlace { display:block; margin-top:10px; color:#007bff; text-decoration:none; }
-        .enlace:hover { text-decoration:underline; }
-        .volver {
-            display:inline-block;
-            margin-top:20px;
-            padding:8px 15px;
-            background:#6c757d;
-            color:white;
-            border-radius:5px;
-            text-decoration:none;
+        header {
+            background: #007bff;
+            color: white;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
-        .volver:hover { background:#5a6268; }
+        header img {
+            height: 180px;
+            width: auto;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
-    <h2>Inicio de Sesión - Aventones</h2>
+
+<header>
+    <img src="logo/logo.png" alt="Logo Aventones">
+</header>
+
+<main class="contenedor">
+    <h2>Inicio de Sesión</h2>
 
     <?php if (isset($errores['general'])): ?>
-        <div class="error"><?php echo $errores['general']; ?></div>
+        <div class="mensaje-error">
+            <?php echo $errores['general']; ?>
+        </div>
     <?php endif; ?>
 
-    <form method="POST">
-        <label>Correo electrónico:</label><br>
-        <input type="email" name="correo" value="<?php echo htmlspecialchars($correo); ?>" required><br>
+    <form method="POST" class="formulario">
+        <label for="correo">Correo electrónico:</label>
+        <input type="email" name="correo" id="correo" value="<?php echo htmlspecialchars($correo); ?>" required>
 
-        <label>Contraseña:</label><br>
-        <input type="password" name="contrasena" required><br>
+        <label for="contrasena">Contraseña:</label>
+        <input type="password" name="contrasena" id="contrasena" required>
 
-        <button type="submit">Iniciar Sesión</button>
+        <button type="submit" class="btn">Iniciar Sesión</button>
 
-        <a class="enlace" href="registro.php">¿No tiene cuenta? Regístrese aquí</a>
+        <a href="registro.php" class="enlace-pequeno">¿No tiene cuenta? Regístrese aquí</a>
     </form>
 
-    <a href="indexPrincipal.php" class="volver">Volver al Inicio</a>
+    <a href="indexPrincipal.php" class="btn-secundario btn-pequeno">← Volver al Inicio</a>
+</main>
+
+<footer>
+    © <?php echo date("Y"); ?> Aventones | Proyecto ISW-613
+</footer>
+
 </body>
 </html>
